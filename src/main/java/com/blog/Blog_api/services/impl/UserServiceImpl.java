@@ -5,6 +5,7 @@ import com.blog.Blog_api.exception.ResourceNotFoundException;
 import com.blog.Blog_api.payloads.UserDto;
 import com.blog.Blog_api.repositories.UserRepo;
 import com.blog.Blog_api.services.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -68,22 +72,29 @@ public class UserServiceImpl implements UserService {
 
     // DTO → Entity
     private User dtoToUser(UserDto userDto) {
-        User user = new User();
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
-        user.setAbout(userDto.getAbout());
-        user.setPassword(userDto.getPassword());
+        //Using Model Mapper
+        User user;
+        user = this.modelMapper.map(userDto,User.class);
+//        User user = new User();
+//        user.setName(userDto.getName());
+//        user.setEmail(userDto.getEmail());
+//        user.setAbout(userDto.getAbout());
+//        user.setPassword(userDto.getPassword());
         return user;
     }
 
     // Entity → DTO
     private UserDto userToDto(User user) {
-        UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-        dto.setAbout(user.getAbout());
-        dto.setPassword(user.getPassword());
-        return dto;
+        //Using Model Mapper
+        UserDto userdto;
+        userdto= this.modelMapper.map(user,UserDto.class);
+        return  userdto;
+//        UserDto dto = new UserDto();
+//        dto.setId(user.getId());
+//        dto.setName(user.getName());
+//        dto.setEmail(user.getEmail());
+//        dto.setAbout(user.getAbout());
+//        dto.setPassword(user.getPassword());
+//        return dto;
     }
 }
