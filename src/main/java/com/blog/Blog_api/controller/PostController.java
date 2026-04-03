@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.blog.Blog_api.entities.Post;
 import com.blog.Blog_api.payloads.PostDto;
+import com.blog.Blog_api.payloads.PostResponse;
 import com.blog.Blog_api.services.PostService;
 
 @RestController
@@ -47,13 +48,12 @@ public class PostController {
 
     // GET ALL
     @GetMapping
-public ResponseEntity<List<PostDto>> getAllPosts(
+public ResponseEntity<PostResponse> getAllPosts(
         @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-        @RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize) {
+        @RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize,@RequestParam (value = "sortBy" ,defaultValue = "postId",required = false)String sortBy) {
 
-    List<PostDto> allPost = this.postService.getAllPost(pageNumber, pageSize);
-
-    return new ResponseEntity<>(allPost, HttpStatus.OK);
+    PostResponse postResponse = this.postService.getAllPost(pageNumber,pageSize,sortBy);
+    return new ResponseEntity<PostResponse>(postResponse,HttpStatus.OK);
 }
 
     // GET SINGLE
@@ -83,7 +83,8 @@ public ResponseEntity<List<PostDto>> getAllPosts(
     @GetMapping("/search/{keyword}")
     public ResponseEntity<List<PostDto>> searchPosts(@PathVariable String keyword) {
 
-        return ResponseEntity.ok(
-                postService.searchPost(keyword).stream().map(post -> new PostDto()).toList());
+        List<PostDto> result = this.postService.searchPost(keyword);
+        return new ResponseEntity<List<PostDto>>(result,HttpStatus.OK);
+        
     }
 }

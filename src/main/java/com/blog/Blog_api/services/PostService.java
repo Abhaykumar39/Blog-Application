@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.blog.Blog_api.entities.Post;
 import com.blog.Blog_api.payloads.PostDto;
+import com.blog.Blog_api.payloads.PostResponse;
 
 public interface PostService {
 
@@ -17,7 +18,7 @@ public interface PostService {
     void deletePost(Integer postId);
 
     // getAllPost
-    List<PostDto> getAllPost(Integer pageNumber,Integer pageSize);
+    PostResponse getAllPost(Integer pageNumber,Integer pageSize,String sortBy);
 
     // getSingle Post
     PostDto getPostById(Integer postId);
@@ -29,7 +30,7 @@ public interface PostService {
     List<PostDto> getPostsByUser(Integer userId);
 
     // search post
-    List<Post> searchPost(String keyword);
+    List<PostDto> searchPost(String keyword);
 
 
    

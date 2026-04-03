@@ -29,7 +29,7 @@ public class Post {
     private Integer postId;
 
     @Column(name="post_title")
-    private String Title;
+    private String title;
 
     @Column(length = 1000)
     private String content;
