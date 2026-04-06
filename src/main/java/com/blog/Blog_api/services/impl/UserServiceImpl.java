@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -96,5 +97,10 @@ public class UserServiceImpl implements UserService {
 //        dto.setAbout(user.getAbout());
 //        dto.setPassword(user.getPassword());
 //        return dto;
+    }
+
+    @Override
+    public Optional<User> findUserByEmail(String username) {
+        return userRepo.findByEmail(username);
     }
 }

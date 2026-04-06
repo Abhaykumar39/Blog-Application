@@ -4,6 +4,7 @@ import com.blog.Blog_api.entities.User;
 import com.blog.Blog_api.payloads.UserDto;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -12,5 +13,6 @@ public interface UserService {
     UserDto getUserById(Integer userId);
     List<UserDto> getAllUsers();
     void deleteUser(Integer userID);
+    Optional<User> findUserByEmail(String username);
 
 }
