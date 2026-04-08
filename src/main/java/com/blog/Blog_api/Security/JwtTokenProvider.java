@@ -1,9 +1,13 @@
 package com.blog.Blog_api.Security;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 
 import com.blog.Blog_api.entities.User;
 
@@ -14,42 +18,32 @@ import io.jsonwebtoken.security.Keys;
 public class JwtTokenProvider {
 
     // Existing JWT token generation method
-    public static String generateJwtToken(User user) {
+    public static String generateJwtToken(Authentication auth) {
         // Implement JWT token generation using a library like JJWT
+        Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+        String roles=populateAuthorities(authorities);
         return Jwts.builder()
-                .setSubject(user.getEmail())
-                .claim("username", user.getUsername())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + 86400000)) // 24 hours
+                .claim("email", auth.getName())
+                .claim("authorities", roles)
                 .signWith(Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes()), SignatureAlgorithm.HS512)
                 .compact();
     }
-
-    // New method to generate a refresh token
-    public static String generateRefreshToken(User user) {
-        // Generate a random UUID for the refresh token
-        String refreshToken = UUID.randomUUID().toString();
-
-        // Store the refresh token securely (e.g., in a database or Redis)
-        // For demonstration purposes, we'll store it in a simple map
-        refreshTokens.put(user.getEmail(), refreshToken);
-
-        return refreshToken;
+    public String getEmailFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("email", String.class);
     }
-
-    // New method to validate and refresh the JWT token
-    public static String refreshJwtToken(String refreshToken, User user) {
-        // Validate the refresh token
-        if (!refreshTokens.get(user.getEmail()).equals(refreshToken)) {
-            throw new RuntimeException("Invalid refresh token");
+    private static String populateAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        StringBuilder roles = new StringBuilder();
+        for (GrantedAuthority authority : authorities) {
+            roles.append(authority.getAuthority()).append(",");
         }
-
-        // Generate a new JWT token
-        String newJwtToken = generateJwtToken(user);
-
-        return newJwtToken;
+        if (roles.length() > 0) {
+            roles.deleteCharAt(roles.length() - 1); // Remove trailing comma
+        }
+        return roles.toString();
     }
-
-    // Simple map to store refresh tokens (replace with a secure storage mechanism)
-    private static Map<String, String> refreshTokens = new ConcurrentHashMap<>();
 }
